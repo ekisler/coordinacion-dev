@@ -156,7 +156,7 @@ const StudentInfo = ({ student, age, formatteBirthDate }) => {
         color={bgColor}
         px={1}
       >
-        ID FIDE:{' '}
+        ID FIDE: {' '}
         <Text
           as={'span'}
           fontSize={16}
