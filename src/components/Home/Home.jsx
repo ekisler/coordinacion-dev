@@ -43,7 +43,7 @@ const Home = () => {
           fontWeight="extrabold"
           lineHeight="tall"
         >
-          Coordinación y Control de Estudios
+          Coordinación y Control de Estudios 
         </Heading>
         <Text
           fontSize={{ base: 'lg', md: 'xl' }}
