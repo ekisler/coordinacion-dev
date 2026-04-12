@@ -45,6 +45,7 @@ export const checkAuthUser = () => async dispatch => {
     });
   } catch (error) {
     dispatch({ type: 'AUTH_LOGOUT' }); // Si falla, cierra sesión
+    console .error('Error al verificar autenticación:', error.message);
   }
 };
 

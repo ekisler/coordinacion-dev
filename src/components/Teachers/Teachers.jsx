@@ -17,6 +17,14 @@ const Teachers = () => {
   const [searchTerm, setSearchTerm] = useState('');
 
   const activeTeachers = teachers?.filter(teacher => {
+    const roles = teacher?.userId?.roles;
+
+    // 1. FILTRO DE ROL: Si el backend dice que NO es profesor, lo sacamos.
+    // Esto atrapará a los administrativos/admins puros.
+    if (roles && roles.isTeacher === false) return false;
+
+    // 2. FILTRO DE SEGURIDAD: Si no hay userId, es un registro incompleto.
+    if (!teacher.userId) return false;
     const isUserDisabled = teacher?.userId?.roles?.isDisabled;
     const isTeacherDirectlyDisabled = teacher?.isDisabled;
 
@@ -43,6 +51,13 @@ const Teachers = () => {
   }
 
   if (error) return <ShowErrorAlert error={error} />;
+
+  if (!loading && teachers && teachers.length > 0) {
+  console.log("DATOS ACTUALIZADOS DEL PRIMER REGISTRO:", {
+    email: teachers[0].email,
+    roles: teachers[0].userId?.roles
+  });
+}
 
   return (
     <Box p={2}>
