@@ -1,5 +1,6 @@
 import axios from "axios";
 import { refreshAccessToken, clearCookies } from "../../utils/authUtils.js";
+import { store } from "../store.js";
 
 const baseURL = import.meta.env.VITE_API_URL;
 
@@ -27,14 +28,18 @@ api.interceptors.response.use(
         }
       } catch (refreshError) {
         console.error("Error al renovar el token:", refreshError.message);
+
+        store.dispatch({ type: 'AUTH_LOGOUT' });
+
         window.location.href = "/login"; // Redirigir al login si la renovación falla
         return Promise.reject(refreshError);
       } finally {
-        isRefreshing = false;
+        isRefreshing = false; 
       }
     }
 
     if (error.response?.status === 401){
+      store.dispatch({ type: 'AUTH_LOGOUT' });
       clearCookies();
       return Promise.reject(error);
   }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import WeekDays from '../../utils/WeekDays';
 import { startOfWeek, format, addDays } from 'date-fns';
@@ -92,7 +92,7 @@ const AssignedAttendanceLists = () => {
     return <SkeletonTDashboard />;
   }
 
-  if (!(isAdmin || (isDisabled && !isTeacher))) {
+  if (!(isAdmin || (!isDisabled && isTeacher))) {
     return <AccessDenied />;
   }
 

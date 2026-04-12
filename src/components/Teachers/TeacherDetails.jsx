@@ -1,37 +1,37 @@
-import { Center, Heading, Stack, Text } from '@chakra-ui/react';
-import { BiSolidUserDetail } from 'react-icons/bi';
-import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router';
-import { useDispatch, useSelector } from 'react-redux';
-import moment from 'moment';
+import { Center, Heading, Stack, Text } from "@chakra-ui/react";
+import { BiSolidUserDetail } from "react-icons/bi";
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import moment from "moment";
 import {
   getTeachersById,
   getAttendanceListsById,
-} from '../../store/actions/teacherActions.js';
+} from "../../store/actions/teacherActions.js";
 import {
   getAssignmentsByTeacher,
   resetAssignments,
-} from '../../store/actions/planningActions.js';
-import { selectAttendanceLists } from '../../store/selectors.js';
-import AccessDenied from '../../utils/AccessDenied.jsx';
-import { Skeleto } from '../../utils/Skeleton.jsx';
-import TeacherInfo from './TeacherInfo.jsx';
-import AttendanceModal from './AttendanceModal.jsx';
-import AssignmentsModal from './AssignmentsModals.jsx';
-import { calculateAge } from '../../utils/calculateAge.js';
+} from "../../store/actions/planningActions.js";
+import { selectAttendanceLists } from "../../store/selectors.js";
+import AccessDenied from "../../utils/AccessDenied.jsx";
+import { Skeleto } from "../../utils/Skeleton.jsx";
+import TeacherInfo from "./TeacherInfo.jsx";
+import AttendanceModal from "./AttendanceModal.jsx";
+import AssignmentsModal from "./AssignmentsModals.jsx";
+import { calculateAge } from "../../utils/calculateAge.js";
 
 const TeacherDetails = () => {
   const dispatch = useDispatch();
   const { id } = useParams();
 
-  const { user } = useSelector(state => state.auth);
+  const { user } = useSelector((state) => state.auth);
   const isAdmin = user?.roles?.isAdmin;
   const isDisabled = user?.roles?.isDisabled;
-  const isTeacher = user?.roles?.isTeacher;
-  const teacher = useSelector(state => state?.teachers?.teacher);
-  const loading = useSelector(state => state?.teachers?.loading);
-  const assignments = useSelector(state => state?.assignments?.assignments);
-  const loadingAssignments = useSelector(state => state.assignments.loading);
+  const isSuperAdmin = user?.roles?.isSuperAdmin;
+  const teacher = useSelector((state) => state?.teachers?.teacher);
+  const loading = useSelector((state) => state?.teachers?.loading);
+  const assignments = useSelector((state) => state?.assignments?.assignments);
+  const loadingAssignments = useSelector((state) => state.assignments.loading);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [assignmentsLoaded, setAssignmentsLoaded] = useState(false);
   const [isAttendanceModalOpen, setAttendanceModalOpen] = useState(false);
@@ -46,7 +46,9 @@ const TeacherDetails = () => {
     setLoadingAttendances(true);
     try {
       await dispatch(getAttendanceListsById(teacher?.userId));
-    } catch (error) {}
+    } catch (error) {
+      console.error("Error al cargar las listas de asistencia:", error);
+    }
     setLoadingAttendances(false);
     setAttendancesLoaded(true);
   };
@@ -69,11 +71,11 @@ const TeacherDetails = () => {
     const fetchTeacher = async () => {
       try {
         if (id) {
-          dispatch({ type: 'RESET_TEACHER' });
+          dispatch({ type: "RESET_TEACHER" });
           await dispatch(getTeachersById(id));
         }
       } catch (error) {
-        console.error('Error al obtener el profesor:', error);
+        console.error("Error al obtener el profesor:", error);
       }
     };
 
@@ -90,25 +92,29 @@ const TeacherDetails = () => {
     }
   }, [dispatch, teacher?.userId]);
 
-  if (!isAdmin || isDisabled || !isTeacher) {
+  if (isDisabled) {
+    return <AccessDenied />;
+  }
+
+  if (!isAdmin && !isSuperAdmin) {
     return <AccessDenied />;
   }
 
   const age = calculateAge(teacher?.birthDate);
 
   const formatteBirthDate = teacher?.birthDate
-    ? moment(teacher?.birthDate).format('DD/MM/YYYY')
-    : '-';
+    ? moment(teacher?.birthDate).format("DD/MM/YYYY")
+    : "-";
 
   return (
     <Stack>
-      <Heading mt={12} align={'center'} size="lg">
+      <Heading mt={12} align={"center"} size="lg">
         <Stack direction="row" align="center" justify="center">
           <BiSolidUserDetail />
           <Text>Detalles del Profesor(a)</Text>
         </Stack>
       </Heading>
-      <Center py={12} align={'center'}>
+      <Center py={12} align={"center"}>
         {loading ? (
           <Stack size="xl" mb={32} mt={24}>
             <Skeleto />

@@ -50,13 +50,15 @@ const TDashboard = () => {
           await dispatch(getAssignmentsByTeacher(userId));
           dispatch(getAttendanceListsById(userId));
         }
-      } catch (err) {}
+      } catch (err) {
+        console.error('Error fetching assignments:', err);
+      }
     };
 
     fetchAssignments();
   }, [dispatch, userId]);
 
-  if (!(isAdmin || (isDisabled && !isTeacher))) {
+  if (!(isAdmin || (!isDisabled && isTeacher))) {
     return <AccessDenied />;
   }
 
